@@ -1,5 +1,55 @@
-.DS_Store
-thumbs.db
+# Numerous always-ignore extensions
+*.diff
+*.err
+*.orig
+*.rej
+*.swo
+*.swp
+*.vi
+*~
+*.psd
+*.rdb
+*.phar
 *.log
-node_modules
+*.csv
+
+# OS or Editor folders
+.DS_Store
+Thumbs.db
+.cache
+.project
+.pydevproject
+.settings
+.tmproj
+*.esproj
+nbproject
+*.sublime-project
+*.sublime-workspace
 tmp
+
+# Translations
+*.mo
+
+# Folders to ignore
+.hg
+.svn
+.CVS
+.build
+frontend/static/*
+project
+
+# Unit test / coverage reports
+.coverage
+.tox
+
+# npm
+node_modules
+
+# Bower
+bower_components
+
+# Sas
+.sass-cache
+
+#nodemon
+.nodemonignore
