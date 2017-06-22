@@ -28,7 +28,8 @@ class econoTransactions {
 					raw: {
 						google: [],
 						oracle: []
-					}
+					},
+					missing: []
 				};
 		
 		this.csvParser = new parseCSV(this.settings.csv);
@@ -54,8 +55,15 @@ class econoTransactions {
 				this.resources.raw.oracle.forEach((sourceID) => {
 					if(this.resources.raw.google.indexOf(sourceID) === -1) {
 						this.missingSourceIDs.push(sourceID);
-						console.log(this.resources.parsed.oracle[sourceID]);
+						this.resources.missing.push(this.resources.parsed.oracle[sourceID]);
 					}
+				});
+
+				csv.stringify(this.resources.missing, (err, data) =>{
+
+					fs.writeFile("./missingSourceIDs.csv", data, (err) => {
+							assert.ifError(err);
+					});
 				});
 
 				console.log("There are", this.missingSourceIDs.length, "missing sourceIDs");
