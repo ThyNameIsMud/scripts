@@ -21,9 +21,15 @@ class econoTransactions {
 		this.files            = {};
 		this.missingSourceIDs = [];
 		this.resources        = {
+					parsed: {
+						google: {},
+						oracle: {}
+					},
+					raw: {
 						google: [],
 						oracle: []
-					};
+					}
+				};
 		
 		this.csvParser = new parseCSV(this.settings.csv);
 
@@ -36,16 +42,19 @@ class econoTransactions {
 				this.files = files;
 
 				this.files.oracle.forEach((item) => {
-					this.resources.oracle.push(parseInt(item[1]));
+					this.resources.raw.oracle.push(parseInt(item[1]));
+					this.resources.parsed.oracle[item[1]] = item;
 				});
 
 				this.files.google.forEach((item) => {
-					this.resources.google.push(parseInt(item[0]));
+					this.resources.raw.google.push(parseInt(item[0]));
+					this.resources.parsed.google[item[1]] = item;
 				});
 
-				this.resources.oracle.forEach((sourceID) => {
-					if(this.resources.google.indexOf(sourceID) === -1) {
+				this.resources.raw.oracle.forEach((sourceID) => {
+					if(this.resources.raw.google.indexOf(sourceID) === -1) {
 						this.missingSourceIDs.push(sourceID);
+						console.log(this.resources.parsed.oracle[sourceID]);
 					}
 				});
 
