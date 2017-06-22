@@ -34,7 +34,7 @@ class econoTransactions {
 		this.csvParser.loadFiles()
 			.then((files) => {
 				this.files = files;
-				
+
 				this.files.oracle.forEach((item) => {
 					this.resources.oracle.push(parseInt(item[1]));
 				});
@@ -62,19 +62,19 @@ class parseCSV {
 	
 	loadFiles() {
 		return new Promise((resolve, reject) => {
-			let files = {
-				google: this.readFile(this.settings.google),
-				oracle: this.readFile(this.settings.oracle)
-			};
+			let files = [
+				this.readFile(this.settings.google),
+				this.readFile(this.settings.oracle)
+			];
 
-			Promise.all([files.google, files.oracle])
+			Promise.all(files)
 			 	.then((values) => {
-			 		let toCSV = {
-			 			google: this.runParser(values[0]),
-			 			oracle: this.runParser(values[1])
-			 		};
+			 		let toCSV = [
+			 			this.runParser(values[0]),
+			 			this.runParser(values[1])
+			 		];
 
-			 		Promise.all([toCSV.google, toCSV.oracle])
+			 		Promise.all(toCSV)
 			 			.then((values) => {
 			 				this.files.google = values[0];
 			 				this.files.oracle = values[1];
@@ -108,7 +108,6 @@ class parseCSV {
 	readFile(fileCSV) {
 		return new Promise((resolve, reject) => {
 			try {
-				console.log("reading files", fileCSV);
 				fs.readFile(fileCSV, 'utf-8', (err, data) => {
 					assert.ifError(err);
 
