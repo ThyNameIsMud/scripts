@@ -6,7 +6,6 @@ const csv    = require('csv');
 const assert = require('assert');
 
 /*
-
 	Google Analytics CSV Headers
 	Transaction ID,Revenue,Tax,Shipping,Quantity
 
@@ -20,8 +19,11 @@ class econoTransactions {
 	constructor(config) {
 		this.settings         = config;
 		this.files            = {};
-		this.resources        = {};
 		this.missingSourceIDs = [];
+		this.resources        = {
+						google: [],
+						oracle: []
+					};
 		
 		this.csvParser = new parseCSV(this.settings.csv);
 
@@ -32,21 +34,17 @@ class econoTransactions {
 		this.csvParser.loadFiles()
 			.then((files) => {
 				this.files = files;
-
+				
 				this.files.oracle.forEach((item) => {
-					this.resources.oracle = [];
-
-					this.resources.oracle.push(item[1]);
+					this.resources.oracle.push(parseInt(item[1]));
 				});
 
 				this.files.google.forEach((item) => {
-					this.resources.google = [];
-
-					this.resources.google.push(item[0]);
+					this.resources.google.push(parseInt(item[0]));
 				});
 
 				this.resources.oracle.forEach((sourceID) => {
-					if(this.resources.google.indexOf(sourceID) < 0) {
+					if(this.resources.google.indexOf(sourceID) === -1) {
 						this.missingSourceIDs.push(sourceID);
 					}
 				});
