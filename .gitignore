@@ -12,6 +12,7 @@
 *.phar
 *.log
 *.csv
+*.out
 
 # OS or Editor folders
 .DS_Store

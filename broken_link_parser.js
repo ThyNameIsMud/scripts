@@ -12,6 +12,8 @@ debug     = true
 
 ;
 
+var ignoreUrls = [];
+
 process.argv.forEach(function (val, index, array) {
     if(!!val && index == 2) {
     	log = val;
@@ -47,17 +49,20 @@ fs.readFile(log, 'utf8', function(read_error, content) {
 			console.log("===============START===============");
 			console.log("Amount Broken: " + parseInt(amountBroken[1]));
 
+			console.log(msg);
 			currentUrl = linkMatchers.currentUrl.exec(msg);
-			currentUrl = currentUrl[1];
+			if(currentUrl) {
+				currentUrl = currentUrl[1];
 
-			console.log(currentUrl);
+				console.log(currentUrl);
 
-			while((brokenURL = linkMatchers.links.exec(msg)) !== null) {
-
-				console.log("Broken URL: ",brokenURL[2]);
-				console.log("Status Code: ",brokenURL[3]);
-
-				output.push([currentUrl,brokenURL[2],brokenURL[3]]);
+				while((brokenURL = linkMatchers.links.exec(msg)) !== null) {
+					console.log("Broken URL: ",brokenURL[2]);
+					console.log("Status Code: ",brokenURL[3]);
+					if (ignoreUrls.indexOf(brokenURL[2]) === -1) {
+						output.push([currentUrl,brokenURL[2],brokenURL[3]]);
+					}
+				}
 			}
 			console.log("===============END==================");
 		}
