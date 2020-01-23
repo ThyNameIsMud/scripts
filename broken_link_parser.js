@@ -12,7 +12,10 @@ debug     = true
 
 ;
 
-var ignoreUrls = [];
+var ignoreUrls = [
+	'https://www.linkedin.com/company/e-conolight/',
+	'https://pinterest.com/pin/create/button/'
+];
 
 process.argv.forEach(function (val, index, array) {
     if(!!val && index == 2) {
@@ -24,6 +27,10 @@ process.argv.forEach(function (val, index, array) {
     }
 });
 
+function escapeRegExp(string) {
+	string.replace(/[.*+?^${}()|[\]i\\]/g, '\\$&');
+	return string.replace(/\//g, '\\$&')
+}
 
 fs.readFile(log, 'utf8', function(read_error, content) {
 	var logs = [];
@@ -59,7 +66,12 @@ fs.readFile(log, 'utf8', function(read_error, content) {
 				while((brokenURL = linkMatchers.links.exec(msg)) !== null) {
 					console.log("Broken URL: ",brokenURL[2]);
 					console.log("Status Code: ",brokenURL[3]);
-					if (ignoreUrls.indexOf(brokenURL[2]) === -1) {
+					var ignoredUrl = [];
+					ignoreUrls.forEach((ignore) => {
+						console.log('/'+escapeRegExp(ignore)+'/');
+						ignoredUrl.push(/escapeRegExp(ignore)/.test().toString());
+					});
+					if (ignoredUrl.indexOf('true') === -1) {
 						output.push([currentUrl,brokenURL[2],brokenURL[3]]);
 					}
 				}
