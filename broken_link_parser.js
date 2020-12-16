@@ -1,5 +1,5 @@
-import { readFile, writeFile } from 'fs';
-import { stringify } from 'csv';
+import { readFile, createWriteStream } from 'fs';
+import csv from 'csv';
 
 class BrokenLinkParser {
 	constructor(ignoredUrls) {
@@ -12,33 +12,41 @@ class BrokenLinkParser {
 	async parse() {
 		try {
 			const content = await this.readFile();
-			const parsedOutput = this.parseContent(content);
-			await this.writeCSV(parsedOutput);
+			const parsedOutput = await this.parseContent(content.toString());
+			this.writeCSV(parsedOutput);
 		} catch (e) {
 			throw e;
 		}
-
 	}
 
 	parseContent(content) {
-		return content.split(/\n{2}/).map((section) => {
-			const numberBroken = section.match(/([1-9]+)\sbroken/);
+		return new Promise((resolve, reject) => {
+			let outarr = [];
 
-			if (numberBroken) {
-				const currentURL = section.match(/Getting links from:\s([\S]+)/);
-				const brokenLinks = section.matchAll(/├─BROKEN─\s(([\S]+)\s\(([\S]+)\)|[\S]+)/gi);
+			try {
+				content.split(/\n{2}/).map((section) => {
+					const numberBroken = section.match(/([1-9]+)\sbroken/);
 
-				return this.parseBrokenLinks(currentURL, brokenLinks);
+					if (numberBroken) {
+						const currentURL = section.match(/Getting links from:\s([\S]+)/);
+						if (currentURL) {
+							const brokenLinks = [...section.matchAll(/├─BROKEN─\s(([\S]+)\s\(([\S]+)\)|[\S]+)/gi)];
+							outarr = [...outarr, ...this.parseBrokenLinks(currentURL[1], brokenLinks)];
+						}
+					}
+				});
+
+				resolve(outarr);
+			} catch (e) {
+				reject(e);
 			}
-
-			return [];
 		});
 	}
 
 	parseBrokenLinks(currentUrl, brokenLinks) {
 		return brokenLinks.map((link) => {
-			if (!this.ignoredUrls.includes(link)) {
-				const [brokenLink, statusCode] = brokenLinks;
+			const [m,s, brokenLink, statusCode] = link;
+			if (!this.ignoredUrls.includes(brokenLink)) {
 				return [currentUrl, brokenLink, statusCode];
 			}
 		});
@@ -56,23 +64,19 @@ class BrokenLinkParser {
 		});
 	}
 
-	async writeCSV(parsedOutput) {
-		const stream = stringify(parsedOutput);
+	writeCSV(parsedOutput) {
+		console.log(parsedOutput);
+		const stream = csv.stringify(parsedOutput);
 
-		return new Promise((resolve, reject) => {
-			writeFile(this.outFile, stream, (err) => {
-				if (err) {
-					reject(err);
-				}
-				resolve();
-			});
-		})
+		stream.pipe(createWriteStream(this.outFile));
 	}
 }
+
 
 const brokenLinksParser = new BrokenLinkParser([
 	'https://www.linkedin.com/company/bracelab/',
 	'https://bracelab-prod.riversagency.com/clinicians-classroom/index/index'
 ]);
 
-await brokenLinksParser.parse();
+brokenLinksParser.parse();
+

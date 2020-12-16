@@ -1,6 +1,7 @@
 {
   "name": "scripts",
-  "version": "1.0.0",
+  "type": "module",
+  "version": "1.0.1",
   "description": "",
   "main": "broken_link_parser.js",
   "scripts": {
@@ -10,6 +11,5 @@
   "license": "ISC",
   "dependencies": {
     "csv": "^5.3.2"
-  },
-  "type": "module"
+  }
 }
