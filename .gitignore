@@ -13,6 +13,8 @@
 *.log
 *.csv
 *.out
+*.gz
+.idea
 
 # OS or Editor folders
 .DS_Store

@@ -4,11 +4,12 @@
   "description": "",
   "main": "broken_link_parser.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node broken_link_parser.js"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "csv": "^1.1.1"
-  }
+    "csv": "^5.3.2"
+  },
+  "type": "module"
 }
